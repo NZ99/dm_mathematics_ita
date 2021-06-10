@@ -36,41 +36,41 @@ import sympy
 
 # For converting integers to words:
 _INTEGER_LOW = [
-    'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
-    'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteeen', 'fifteen',
-    'sixteen', 'seventeen', 'eighteen', 'nineteen'
+    'zero', 'un', 'due', 'tre', 'quattro', 'cinque', 'sei', 'sette', 'otto',
+    'nove', 'dieci', 'undici', 'dodici', 'tredici', 'quattordici', 'quindici',
+    'sedici', 'diciassette', 'diciotto', 'diciannove'
 ]
 _INTEGER_MID = [
-    '', '', 'twenty', 'thirty', 'fourty', 'fifty', 'sixty', 'seventy', 'eighty',
-    'ninety'
+    '', '', 'venti', 'trenta', 'quaranta', 'cinquanta', 'sessanta', 'settanta', 'ottanta',
+    'novanta'
 ]
 _INTEGER_HIGH = [
-    (int(1e12), 'trillion'), (int(1e9), 'billion'), (int(1e6), 'million'),
-    (int(1e3), 'thousand'), (100, 'hundred')
+    (int(1e12), 'bilione'), (int(1e9), 'miliardo'), (int(1e6), 'milione'),
+    (int(1e3), 'migliaio'), (100, 'centinaio')
 ]
 
 
 # For converting rationals to words:
 _SINGULAR_DENOMINATORS = [
-    '', '', 'half', 'third', 'quarter', 'fifth', 'sixth', 'seventh', 'eighth',
-    'ninth', 'tenth', 'eleventh', 'twelth', 'thirteenth', 'fourteenth',
-    'fifteenth', 'sixteenth', 'seventeenth', 'eighteenth', 'nineteenth',
-    'twentieth'
+    '', '', 'mezzo', 'terzo', 'quarto', 'quinto', 'sesto', 'settimo', 'ottavo',
+    'nono', 'decimo', 'undicesimo', 'dodicesimo', 'tredicesimo', 'quattordicesimo',
+    'quindicesimo', 'sedicesimo', 'diciassettesimo', 'diciottesimo', 'diciannovesimo',
+    'ventesimo'
 ]
 _PLURAL_DENOMINATORS = [
-    '', '', 'halves', 'thirds', 'quarters', 'fifths', 'sixths', 'sevenths',
-    'eighths', 'ninths', 'tenths', 'elevenths', 'twelths', 'thirteenths',
-    'fourteenths', 'fifteenths', 'sixteenths', 'seventeenths', 'eighteenths',
-    'nineteenths', 'twentieths'
+    '', '', 'mezzi', 'terzi', 'quarti', 'quinti', 'sesti', 'settimi',
+    'ottavi', 'noni', 'decimi', 'undicesimi', 'dodicesimi', 'tredicesim',
+    'quattordicesimi', 'quindicesimi', 'sedicesimi', 'diciassettesimi', 'diciottesimi',
+    'diciannovesimi', 'ventesimi'
 ]
 
 
 # For converting ordinals to words:
 _ORDINALS = [
-    'zeroth', 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh',
-    'eighth', 'ninth', 'tenth', 'eleventh', 'twelth', 'thirteenth',
-    'fourteenth', 'fifteenth', 'sixteenth', 'seventeenth', 'eighteenth',
-    'nineteenth', 'twentieth'
+    'zeresim', 'prim', 'second', 'terz', 'quart', 'quint', 'sest', 'settim',
+    'ottav', 'non', 'decim', 'undicesim', 'dodicesim', 'tredicesim',
+    'quattordicesim', 'quindicesim', 'sedicesim', 'diciassettesim', 'diciottesim',
+    'diciannovesim', 'ventesim'
 ]
 
 
@@ -275,7 +275,7 @@ class StringNumber(object):
         words = self._integer_to_words(den) + [word]
         if rem > 0:
           if rem < 100:
-            words.append('and')
+            words.append('e')
           words += self._integer_to_words(rem)
         return words
 

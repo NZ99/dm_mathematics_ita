@@ -101,14 +101,15 @@ def _make_comparison_question(context, left, right):
       answer = (
           left.handle if sympy.Gt(left.value, right.value) else right.handle)
       template = random.choice([
-          'Which is bigger: {left} or {right}?',
-          'Which is greater: {left} or {right}?',
+          'Qual è più grande: {left} o {right}?',
+          'Qual è maggiore: {left} o {right}?',
       ])
     else:
       answer = (
           left.handle if sympy.Lt(left.value, right.value) else right.handle)
       template = random.choice([
-          'Which is smaller: {left} or {right}?',
+          'Qual è più piccolo: {left} o {right}?',
+          'Qual è minore: {left} o {right}?',
       ])
     return example.Problem(
         question=example.question(context, template, left=left, right=right),
@@ -125,47 +126,47 @@ def _make_comparison_question(context, left, right):
 
   templates = {
       '<': [
-          'Is {left} ' + ops.LT_SYMBOL + ' {right}?',
-          'Is {left} less than {right}?',
-          'Is {left} smaller than {right}?',
+          'É {left} ' + ops.LT_SYMBOL + ' {right}?',
+          'É {left} minore di {right}?',
+          'É {left} più piccolo di {right}?',
       ],
       '<=': [
-          'Is {left} ' + ops.LE_SYMBOL + ' {right}?',
-          'Is {left} less than or equal to {right}?',
-          'Is {left} at most {right}?',
-          'Is {left} at most as big as {right}?',
+          'É {left} ' + ops.LE_SYMBOL + ' {right}?',
+          'É {left} minore o uguale a {right}?',
+          'É {left} al massimo pari a {right}?',
+          'É {left} al massimo grande come {right}?',
       ],
       '>': [
-          'Is {left} ' + ops.GT_SYMBOL + ' {right}?',
-          'Is {left} greater than {right}?',
-          'Is {left} bigger than {right}?',
+          'É {left} ' + ops.GT_SYMBOL + ' {right}?',
+          'É {left} maggiore di {right}?',
+          'É {left} più grande di {right}?',
       ],
       '>=': [
-          'Is {left} ' + ops.GE_SYMBOL + ' {right}?',
-          'Is {left} greater than or equal to {right}?',
-          'Is {left} at least {right}?',
-          'Is {left} at least as big as {right}?',
+          'É {left} ' + ops.GE_SYMBOL + ' {right}?',
+          'É {left} maggiore o uguale a {right}?',
+          'É {left} almeno pari a {right}?',
+          'É {left} almeno grande come {right}?',
       ],
       '=': [
-          'Does {left} ' + ops.EQ_SYMBOL + ' {right}?',
-          'Are {left} and {right} equal?',
-          'Is {left} equal to {right}?',
-          'Do {left} and {right} have the same value?',
+          'L\'uguaglianza {left} ' + ops.EQ_SYMBOL + ' {right} è vera?',
+          'Sono {left} e {right} uguali?',
+          'É {left} uguale a {right}?',
+          'Hanno {left} e {right} lo stesso valore?',
       ],
       '!=': [
-          'Is {left} ' + ops.NE_SYMBOL + ' {right}?',
-          'Is {left} not equal to {right}?',
-          'Are {left} and {right} unequal?',
-          'Are {left} and {right} nonequal?',
-          'Are {left} and {right} non-equal?',
-          'Do {left} and {right} have different values?',
+          'L\'uguaglianza {left} ' + ops.NE_SYMBOL + ' {right} è falsa?',
+          'É {left} diverso da {right}?',
+          'Sono {left} e {right} diversi?',
+          'Sono {left} e {right} diseguali?',
+          'Sono {left} e {right} non equivalenti?',
+          'Hanno {left} e {right} valori diversi?',
       ],
   }
 
   comparison = random.choice(list(comparisons.keys()))
   template = random.choice(templates[comparison])
   question = example.question(context, template, left=left, right=right)
-  answer = comparisons[comparison](left.value, right.value)
+  answer = 'Si' if comparisons[comparison](left.value, right.value) else 'No'
 
   return example.Problem(question=question, answer=answer)
 
@@ -260,7 +261,7 @@ def _kth_biggest_list_question(context, entities, adjective, answer):
   entity_dict, values_template = _entities_to_list(entities)
 
   question = example.question(
-      context, 'What is the {adjective} value in ' + values_template + '?',
+      context, 'Qual è il {adjective} tra ' + values_template + '?',
       adjective=adjective, **entity_dict)
   return example.Problem(question=question, answer=answer.handle)
 
@@ -270,7 +271,7 @@ def _kth_biggest_multichoice_question(context, entities, adjective, answer):
   entity_dict, choices_template, answer_choice = _entities_to_choices(
       entities, answer)
   question = example.question(
-      context, 'Which is the {adjective} value?' + choices_template,
+      context, 'Qual è il {adjective}?' + choices_template,
       adjective=adjective, **entity_dict)
   return example.Problem(question=question, answer=answer_choice)
 
@@ -324,14 +325,14 @@ def kth_biggest(sample_args, count=None):
   if random.choice([False, True]):
     # Do from biggest.
     answer = sorted_entities[-ordinal]
-    adjective = 'biggest'
+    adjective = 'più grande'
   else:
     # Do from smallest.
     answer = sorted_entities[ordinal - 1]
-    adjective = 'smallest'
+    adjective = 'più piccolo'
 
   if ordinal > 1:
-    adjective = str(display.StringOrdinal(ordinal)) + ' ' + adjective
+    adjective = str(display.StringOrdinal(ordinal)) + 'o valore ' + adjective
 
   if display_multichoice:
     return _kth_biggest_multichoice_question(
@@ -347,7 +348,7 @@ def _closest_in_list_question(context, entities, target, adjective, answer):
 
   question = example.question(
       context,
-      'What is the {adjective} to {target} in ' + values_template + '?',
+      'Qual è il valore {adjective} a {target} tra ' + values_template + '?',
       adjective=adjective, target=target, **entity_dict)
   return example.Problem(question=question, answer=answer.handle)
 
@@ -359,7 +360,7 @@ def _closest_multichoice_question(context, entities, target, adjective, answer):
 
   question = example.question(
       context,
-      'Which is the {adjective} to {target}?' + choices_template,
+      'Qual è il valore {adjective} a {target}?' + choices_template,
       adjective=adjective, target=target, **entity_dict)
   return example.Problem(question=question, answer=answer_choice)
 
@@ -400,7 +401,7 @@ def closest(sample_args, count=None):
   min_difference = min(differences)
   answer_index = differences.index(min_difference)
   answer = entities[answer_index]
-  adjective = random.choice(['closest', 'nearest'])
+  adjective = random.choice(['più prossimo', 'più vicino'])
 
   if display_multichoice:
     return _closest_multichoice_question(
@@ -428,14 +429,14 @@ def sort(sample_args, count=None):
 
   ascending = random.choice([False, True])
   templates = [
-      'Sort ' + unsorted_template + ' in {direction} order.',
-      'Put ' + unsorted_template + ' in {direction} order.',
+      'Si ordinino ' + unsorted_template + ' in ordine {direction}.',
+      'Si mettano ' + unsorted_template + ' in ordine {direction}.',
   ]
   if ascending:
-    templates.append('Sort ' + unsorted_template + '.')
-    direction = random.choice(['ascending', 'increasing'])
+    templates.append('Si ordinino ' + unsorted_template + '.')
+    direction = random.choice(['ascendente', 'crescente'])
   else:
-    direction = random.choice(['descending', 'decreasing'])
+    direction = random.choice(['discendente', 'decrescente'])
   template = random.choice(templates)
 
   sorted_entities = sorted(

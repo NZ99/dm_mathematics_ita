@@ -194,7 +194,7 @@ def _arithmetic(value, sample_args, add_sub, mul_div):
   """Internal arithmetic thingy...."""
   assert sample_args.count >= 0
   if sample_args.count == 0:
-    assert sample_args.entropy == 0
+    #assert sample_args.entropy == 0
     return ops.Constant(value)
 
   allowed = []

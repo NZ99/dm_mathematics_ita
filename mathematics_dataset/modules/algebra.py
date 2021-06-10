@@ -187,17 +187,17 @@ def polynomial_roots(value, sample_args, context=None):
       variable = sympy.Symbol(context.pop())
       equality = ops.Eq(polynomial_entity.handle.apply(variable), 0)
     template = random.choice([
-        'Let {equality}. What is {variable}?',
-        'Let {equality}. Calculate {variable}.',
-        'Suppose {equality}. What is {variable}?',
-        'Suppose {equality}. Calculate {variable}.',
-        'What is {variable} in {equality}?',
-        'Solve {equality} for {variable}.',
-        'Find {variable} such that {equality}.',
-        'Find {variable}, given that {equality}.',
-        'Determine {variable} so that {equality}.',
-        'Determine {variable}, given that {equality}.',
-        'Solve {equality}.'
+        'Sia {equality}. Quali sono i possibili valori di {variable}?',
+        'Sia {equality}. Si calcolino le possibili soluzioni per {variable}.',
+        'Data l\'uguaglianza {equality}. Quali sono i possibili valori di {variable}?',
+        'Data l\'uguaglianza {equality}. Si calcolino le possibili soluzioni per {variable}.',
+        'Quali sono i possibili valori di {variable} nell\'equazione {equality}?',
+        'Si risolva l\'equazione {equality} rispetto a {variable}.',
+        'Si trovino i possibili valori di {variable} tali da soddisfare l\'uguaglianza {equality}.',
+        'Si trovino i possibili valori di {variable}, data l\'uguaglianza {equality}.',
+        'Si determinino i possibili valori di {variable} tali che l\'uguaglianza {equality} sia vera.',
+        'Si determinino i possibili valori di {variable}, data l\'uguaglianza {equality}.',
+        'Si risolva l\'equazione {equality}.'
     ])
     return example.Problem(
         question=example.question(
@@ -213,7 +213,7 @@ def polynomial_roots(value, sample_args, context=None):
     factored = sympy.factor(
         polynomials.coefficients_to_polynomial(coeffs, variable))
     template = random.choice([
-        'Factor {expression}.',
+        'Si fattorizzi il polinomio {expression}.',
     ])
     return example.Problem(
         question=example.question(context, template, expression=expression),
@@ -266,7 +266,7 @@ def _solve_linear_system(degree, value, sample_args, context=None):
 
   if is_question:
     template = random.choice([
-        'Solve {equations} for {variable}.',
+        'Si risolva l\'equazione {equations} rispetto a {variable}.',
     ])
     return example.Problem(
         example.question(
@@ -277,7 +277,7 @@ def _solve_linear_system(degree, value, sample_args, context=None):
     return composition.Entity(
         context=context,
         value=answer,
-        description='Suppose {equations}.',
+        description='Data l\'uguaglianza {equations}.',
         handle=variable,
         equations=equations)
 
@@ -344,9 +344,9 @@ def sequence_next_term(min_entropy, max_entropy):
   sequence_sample = display.NumberList(sequence_sample)
 
   template = random.choice([
-      'What is next in {sequence}?',
-      'What comes next: {sequence}?',
-      'What is the next term in {sequence}?',
+      'Cosa viene dopo nella sequenza {sequence}?',
+      'Come continua la sequenza {sequence}?',
+      'Qual è il prossimo valore nella sequenza {sequence}?',
   ])
   answer = sequence.term(num_terms + 1)
 
@@ -368,7 +368,7 @@ def sequence_nth_term(min_entropy, max_entropy):
   sequence_sample = display.NumberList(sequence_sample)
 
   template = random.choice([
-      'What is the {variable}\'th term of {sequence}?',
+      'Qual è il {variable}-esimo valore della sequenza {sequence}?',
   ])
   answer = sequence.sympy
 

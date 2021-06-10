@@ -1,25 +1,9 @@
-# Copyright 2018 DeepMind Technologies Limited.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-"""Prints to stdout different curriculum questions."""
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
 import collections
-import textwrap
 
 # Dependency imports
 from absl import app
@@ -28,15 +12,21 @@ from absl import logging
 from mathematics_dataset import generate_settings
 from mathematics_dataset.modules import modules
 import six
+import ray
 from six.moves import range
 
+ray.init(num_cpus=4)
 
 FLAGS = flags.FLAGS
 
+flags.DEFINE_string('output_dir', None, 'Where to write output text')
+flags.DEFINE_boolean('train_split', False,
+                     'Whether to split training data by difficulty')
 flags.DEFINE_string('filter', '', 'restrict to matching module names')
 flags.DEFINE_integer('per_train_module', 100, 'Num of examples per train module')
 flags.DEFINE_integer('per_test_module', 10, 'Num of examples per test module')
-flags.DEFINE_bool('show_dropped', False, 'Whether to print dropped questions')
+flags.mark_flag_as_required('output_dir')
+
 
 
 filtered_modules = collections.OrderedDict([])
@@ -133,39 +123,44 @@ def sample_from_module(module):
     question = str(problem.question)
     if len(question) > generate_settings.MAX_QUESTION_LENGTH:
       num_dropped += 1
-      #if FLAGS.show_dropped:
-      #  logging.warning('Dropping question: %s', question)
       continue
     answer = str(problem.answer)
     if len(answer) > generate_settings.MAX_ANSWER_LENGTH:
       num_dropped += 1
-      #if FLAGS.show_dropped:
-      #  logging.warning('Dropping question with answer: %s', answer)
       continue
     return problem, num_dropped
 
 
+@ray.remote
+def write_qa(module_name, module, per_module):
+  txt = ''
+  for i in range(per_module):
+    problem, _ = sample_from_module(module)
+    txt += (str(problem.question) + '\n')
+    txt += (str(problem.answer) + '\n')
+
+  return [module_name, txt]
+
+
 def main(unused_argv):
-  """Prints Q&As from modules according to FLAGS.filter."""
-  init_modules()
-
-  text_wrapper = textwrap.TextWrapper(
-      width=80, initial_indent=' ', subsequent_indent='  ')
-
+  init_modules(FLAGS.train_split)
+  output_dir = os.path.expanduser(FLAGS.output_dir)
+  if os.path.exists(output_dir):
+    logging.fatal('output dir %s already exists', output_dir)
+  os.makedirs(output_dir)
   for regime, flat_modules in six.iteritems(filtered_modules):
+    regime_dir = os.path.join(output_dir, regime)
+    os.mkdir(regime_dir)
     per_module = counts[regime]
-    for module_name, module in six.iteritems(flat_modules):
-      # These magic print constants make the header bold.
-      print('\033[1m{}/{}\033[0m'.format(regime, module_name))
-      num_dropped = 0
-      for _ in range(per_module):
-        problem, extra_dropped = sample_from_module(module)
-        num_dropped += extra_dropped
-        text = text_wrapper.fill(
-            '{}  \033[92m{}\033[0m'.format(problem.question, problem.answer))
-        print(text)
-      if num_dropped > 0:
-        logging.warning('Dropped %d examples', num_dropped)
+    processes = [write_qa.remote(module_name, module, per_module) for module_name, module in six.iteritems(flat_modules)]
+    outputs = ray.get(processes)
+    for output in outputs:
+      module_name = output[0]
+      txt = output[1]
+      path = os.path.join(regime_dir, module_name + '.txt')
+      with open(path, 'w') as text_file:
+        text_file.write(txt)
+      logging.info('Written %s', module_name)
 
 
 if __name__ == '__main__':

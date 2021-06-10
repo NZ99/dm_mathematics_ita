@@ -113,10 +113,10 @@ def coefficient_named(value, sample_args, context=None):
   named_coeff = named_coeffs[power]
 
   template = random.choice([
-      'Express {expression} as {canonical} and give {target}.',
-      'Rearrange {expression} to {canonical} and give {target}.',
-      'Express {expression} in the form {canonical} and give {target}.',
-      'Rearrange {expression} to the form {canonical} and give {target}.',
+      'Si esprima {expression} in funzione di {canonical}. Quanto è {target}?',
+      'Si descriva {expression} in funzione di {canonical}. Quanto è {target}?',
+      'Si esprima {expression} in funzione di {canonical}. Si calcoli {target}.',
+      'Si descriva {expression} in funzione di {canonical}. Si calcoli {target}.',
   ])
   return example.Problem(
       question=example.question(
@@ -126,10 +126,7 @@ def coefficient_named(value, sample_args, context=None):
 
 
 _TEMPLATES = [
-    'What is {composed}?',
-    'Calculate {composed}.',
-    'Give {composed}.',
-    'Determine {composed}.',
+    'Si calcoli {composed}.',
 ]
 
 
@@ -185,7 +182,7 @@ def evaluate(value, sample_args, context=None):
         context=context,
         value=value,
         expression=composed,
-        description='Let {self} be {composed}.',
+        description='Sia {self} uguale a {composed}.',
         composed=composed)
 
 
@@ -237,7 +234,7 @@ def add(value, sample_args, context=None):
     return composition.Entity(
         context=context,
         value=value,
-        description='Let {intermediate} = {composed}.',
+        description='Sia {intermediate} uguale a {composed}.',
         handle=composition.FunctionHandle(intermediate_symbol),
         intermediate=intermediate,
         composed=expression)
@@ -258,7 +255,7 @@ def expand(value, sample_args, context=None):
   expression_ = polynomials.sample_with_brackets(variable, order, entropy)
   expanded = sympy.expand(expression_)
   template = random.choice([
-      'Expand {expression}.'
+      'Si sviluppi e semplifichi l\'espressione {expression}.'
   ])
   return example.Problem(
       question=example.question(context, template, expression=expression_),
@@ -306,7 +303,7 @@ def collect(value, sample_args, context=None):
   context.sample_by_replacing_constants(sample_args, unsimplified)
 
   if is_question:
-    template = 'Collect the terms in {unsimplified}.'
+    template = 'Si raccolga a fattor comune e semplifichi l\'espressione {unsimplified}.'
     return example.Problem(
         question=example.question(context, template, unsimplified=unsimplified),
         answer=simplified)
@@ -319,7 +316,7 @@ def collect(value, sample_args, context=None):
         handle=composition.FunctionHandle(function_symbol),
         expression=unsimplified,
         polynomial_variables=variables,
-        description='Let {function} = {unsimplified}.',
+        description='Sia {function} uguale a {unsimplified}.',
         function=function,
         unsimplified=unsimplified)
 
@@ -368,7 +365,7 @@ def simplify_power(value, sample_args, context=None):
   answer = unsimplified.sympy()
 
   template = random.choice([
-      'Simplify {unsimplified} assuming {variable} is positive.',
+      'Si semplifichi {unsimplified} assumendo che la variabile {variable} sia positiva.',
   ])
   return example.Problem(
       example.question(

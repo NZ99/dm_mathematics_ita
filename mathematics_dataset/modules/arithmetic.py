@@ -139,17 +139,17 @@ def _add_question_or_entity(context, p, q, is_question):
 
   if is_question:
     template = random.choice([
-        '{p} + {q}',
-        '{p}+{q}',
-        'Work out {p} + {q}.',
-        'Add {p} and {q}.',
-        'Put together {p} and {q}.',
-        'Sum {p} and {q}.',
-        'Total of {p} and {q}.',
-        'Add together {p} and {q}.',
-        'What is {p} plus {q}?',
-        'Calculate {p} + {q}.',
-        'What is {p} + {q}?',
+        '{p} + {q} è uguale a',
+        '{p}+{q} è uguale a',
+        'Si calcoli il risultato di {p} + {q}.',
+        'Si sommino {p} e {q}.',
+        'Si aggiungano {p} e {q}.',
+        'Somma {p} a {q}.',
+        'Qual è la somma di {p} e {q}?',
+        'Si sommino insieme {p} e {q}.',
+        'Quanto fa {p} più {q}?',
+        'Si calcoli {p} + {q}.',
+        'Quanto fa {p} + {q}?',
     ])
     return example.Problem(
         question=example.question(context, template, p=p, q=q),
@@ -158,7 +158,7 @@ def _add_question_or_entity(context, p, q, is_question):
     return composition.Entity(
         context=context,
         value=value,
-        description='Let {self} = {p} + {q}.',
+        description='Sia {self} uguale a {p} + {q}.',
         p=p, q=q)
 
 
@@ -168,20 +168,20 @@ def _sub_question_or_entity(context, p, q, is_question):
 
   if is_question:
     templates = [
-        '{p} - {q}',
-        'Work out {p} - {q}.',
-        'What is {p} minus {q}?',
-        'What is {p} take away {q}?',
-        'What is {q} less than {p}?',
-        'Subtract {q} from {p}.',
-        'Calculate {p} - {q}.',
-        'What is {p} - {q}?',
+        '{p} - {q} è uguale a',
+        'Si calcoli il risultato di {p} - {q}.',
+        'Quanto fa {p} meno {q}?',
+        'Quanto fa {p} sottraendo {q}?',
+        'Quanto fa {q} togliendo {p}?',
+        'Si sottragga {q} da {p}.',
+        'Si calcoli {p} - {q}.',
+        'Quanto fa {p} - {q}?',
     ]
     if sympy.Ge(p.value, q.value):
       # We calculate p - q, so the difference (|p - q|) is the correct answer.
-      for adjective in ['distance', 'difference']:
-        for pair in ['{p} and {q}', '{q} and {p}']:
-          templates.append('What is the {} between {}?'.format(adjective, pair))
+      for adjective in ['il divario', 'la distanza']:
+        for pair in ['{p} e {q}', '{q} e {p}']:
+          templates.append('Qual è {} tra {}?'.format(adjective, pair))
     template = random.choice(templates)
     return example.Problem(
         question=example.question(context, template, p=p, q=q),
@@ -190,7 +190,7 @@ def _sub_question_or_entity(context, p, q, is_question):
     return composition.Entity(
         context=context,
         value=value,
-        description='Let {self} = {p} - {q}.',
+        description='Sia {self} uguale a {p} - {q}.',
         p=p, q=q)
 
 
@@ -247,10 +247,10 @@ def add_or_sub_in_base(sample_args):
   base = random.randint(2, 16)
   if random.choice([False, True]):
     answer = p + q
-    template = 'In base {base}, what is {p} + {q}?'
+    template = 'In base {base}, quanto fa {p} + {q}?'
   else:
     answer = p - q
-    template = 'In base {base}, what is {p} - {q}?'
+    template = 'In base {base}, quanto fa {p} - {q}?'
   return example.Problem(
       question=example.question(
           context,
@@ -276,15 +276,15 @@ def mul(value, sample_args, context=None):
 
   if is_question:
     templates = [
-        '{p}' + ops.MUL_SYMBOL + '{q}',
-        '{p} ' + ops.MUL_SYMBOL + ' {q}',
-        'Calculate {p}' + ops.MUL_SYMBOL + '{q}.',
-        'Work out {p} ' + ops.MUL_SYMBOL + ' {q}.',
-        'Multiply {p} and {q}.',
-        'Product of {p} and {q}.',
-        'What is the product of {p} and {q}?',
-        '{p} times {q}',
-        'What is {p} times {q}?',
+        '{p}' + ops.MUL_SYMBOL + '{q} è uguale a',
+        '{p} ' + ops.MUL_SYMBOL + ' {q} è uguale a',
+        'Si calcoli {p}' + ops.MUL_SYMBOL + '{q}.',
+        'Si risolva {p} ' + ops.MUL_SYMBOL + ' {q}.',
+        'Si moltiplichi {p} per {q}.',
+        'Si calcoli il prodotto di {p} e {q}.',
+        'Qual è il prodotto di {p} e {q}?',
+        '{p} per {q} è uguale a',
+        'Quanto fa {p} per {q}?',
     ]
     template = random.choice(templates)
     return example.Problem(
@@ -295,7 +295,7 @@ def mul(value, sample_args, context=None):
     return composition.Entity(
         context=context,
         value=answer,
-        description='Let {self} = {p} * {q}.',
+        description='Sia {self} uguale a {p} * {q}.',
         p=p, q=q)
 
 
@@ -323,10 +323,10 @@ def div(value, sample_args, context=None):
 
   if is_question:
     template = random.choice([
-        'Divide {p} by {q}.',
-        '{p} divided by {q}',
-        'What is {p} divided by {q}?',
-        'Calculate {p} divided by {q}.',
+        'Si divida {p} per {q}.',
+        '{p} diviso {q} è uguale a',
+        'Quanto fa {p} diviso {q}?',
+        'Si calcoli {p} diviso {q}.',
     ])
     return example.Problem(
         question=example.question(context, template, p=p, q=q),
@@ -336,7 +336,7 @@ def div(value, sample_args, context=None):
     return composition.Entity(
         context=context,
         value=answer,
-        description='Let {self} be {p} divided by {q}.',
+        description='Sia {self} uguale a {p} diviso {q}.',
         p=p, q=q)
 
 
@@ -356,23 +356,23 @@ def nearest_integer_root(sample_args):
   answer = int(round(value ** (1 / one_over_exponent)))
 
   templates = [
-      'What is {value} to the power of 1/{one_over_exponent}, to the nearest'
-      ' integer?',
+      'Quanto fa {value} elevato a 1/{one_over_exponent}, approssimato all\''
+      'intero più vicino?',
   ]
 
   if one_over_exponent != 2:  # "What is the second root of 4?" never used.
     ordinal = str()
     templates += [
-        'What is the {ordinal} root of {value} to the nearest integer?',
+        'Qual è la {ordinal}a radice di {value} approssimata all\'intero più vicino?',
     ]
 
   if one_over_exponent == 2:
     templates += [
-        'What is the square root of {value} to the nearest integer?',
+        'Qual è la radice quadrata di {value} approssimata all\'intero più vicino?',
     ]
   elif one_over_exponent == 3:
     templates += [
-        'What is the cube root of {value} to the nearest integer?',
+        'Qual è la radice cubica di {value} approssimata all\'intero più vicino?',
     ]
 
   template = random.choice(templates)
@@ -406,11 +406,11 @@ def _calculate(value, sample_args, context, add_sub, mul_div, length=None):
 
   if is_question:
     template = random.choice([
-        '{op}',
-        'What is {op}?',
-        'Evaluate {op}.',
-        'Calculate {op}.',
-        'What is the value of {op}?',
+        '{op} è uguale a',
+        'Quanto fa {op}?',
+        'Si risolva {op}.',
+        'Si calcoli {op}.',
+        'Qual è il risultato di {op}?',
     ])
     return example.Problem(
         question=example.question(context, template, op=op),
@@ -420,7 +420,7 @@ def _calculate(value, sample_args, context, add_sub, mul_div, length=None):
         context=context,
         value=value,
         expression=op,
-        description='Let {self} be {op}.',
+        description='Sia {self} uguale a {op}.',
         op=op)
 
 
@@ -590,7 +590,7 @@ def simplify_surd(value, sample_args, context=None):
   simplified = sympy.expand(sympy.simplify(exp))
 
   template = random.choice([
-      'Simplify {exp}.',
+      'Si semplifichi {exp}.',
   ])
   return example.Problem(
       question=example.question(context, template, exp=exp),

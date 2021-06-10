@@ -109,13 +109,13 @@ def place_value(value, sample_args, context=None):
   integer_as_string = str(integer)
   num_digits = len(integer_as_string)
 
-  firsts = ['', 'ten ', 'hundred ']
+  firsts = ['', 'elle decine d', 'elle centinaia d']
   seconds = [
-      'thousands', 'millions', 'billions', 'trillions', 'quadrillions',
-      'quintillions', 'sextillions', 'septillions', 'octillions', 'nonillions',
-      'decillions',
+      'i migliaia', 'i milioni', 'i miliardi', 'i bilioni', 'i migliaia di bilioni',
+      'i trilioni', 'i triliardi', 'i quadrilioni', 'i quadriliardi', 'i migliaia di quadriliardi',
+      'i milioni di quadriliardi',
   ]
-  place_names = ['units', 'tens', 'hundreds']
+  place_names = ['elle unità', 'elle decine', 'elle centinaia', 'elle migliaia']
   for second in seconds:
     for first in firsts:
       place_names.append(first + second)
@@ -127,7 +127,7 @@ def place_value(value, sample_args, context=None):
   return example.Problem(
       question=example.question(
           context,
-          'What is the {place_name} digit of {integer}?',
+          'Qual è la cifra d{place_name} in {integer}?',
           place_name=place_name, integer=entity.expression_else_handle),
       answer=answer)
 
@@ -174,28 +174,29 @@ def round_number(value, sample_args, context=None):
   if power > 0:
     # Rounding to a power of ten.
     round_to = 10**power
-    if random.choice([False, True]):
+    #if random.choice([False, True]):
       # Write the rounding value as a word instead.
-      round_to = display.StringNumber(round_to,
-                                      join_number_words_with_hyphens=False)
-    description = 'the nearest {round_to}'.format(round_to=round_to)
-  elif power == 0 and random.choice([False, True]):
+    #  round_to = display.StringNumber(round_to,
+    #                                  join_number_words_with_hyphens=False)
+    #else:
+    description = 'al più vicino multiplo di {round_to}'.format(round_to=round_to)
+  elif power == 0:# and random.choice([False, True]):
     # Round to nearest integer.
-    description = 'the nearest integer'
+    description = 'all\'intero più vicino alla'
   else:
     # Round to decimal places.
-    description = random.choice(['{dps} decimal place', '{dps} dp'])
-    if power != -1:
-      # Plural
-      description += 's'
-    dps = -power
-    if random.choice([False, True]):
-      dps = display.StringNumber(dps)
+    description = 'alla {dps}a cifra decimale dopo la virgola'
+    #if power != -1:
+    #  # Plural
+    #  description += 's'
+    dps = display.StringOrdinal(-power)
+    #if random.choice([False, True]):
+    #  dps = display.StringNumber(dps)
     description = description.format(dps=dps)
 
   template = random.choice([
-      'Round {input} to {description}.',
-      'What is {input} rounded to {description}?',
+      'Si approssimi {input} {description}.',
+      'Quanto fa {input} approssimato {description}?',
   ])
 
   return example.Problem(
@@ -247,15 +248,17 @@ def is_prime(value, sample_args, context=None):
   (integer_entity,) = context.sample(sample_args, [integer])
 
   if random.choice([False, True]) and integer != 1:
-    answer = not is_prime_
-    attribute_name = random.choice(['composite', 'a composite number'])
+    answer = 'Si' if not is_prime_ else 'No'
+    #attribute_name = random.choice(['composite', 'a composite number'])
+    attribute_name = 'un numero composto'
   else:
-    answer = is_prime_
-    attribute_name = random.choice(['prime', 'a prime number'])
+    answer = 'Si' if is_prime_ else 'No'
+    #attribute_name = random.choice(['primo', 'a prime number'])
+    attribute_name = 'un numero primo'
 
   return example.Problem(
       question=example.question(
-          context, 'Is {integer} {attribute}?',
+          context, 'È {integer} {attribute}?',
           integer=integer_entity.expression_else_handle,
           attribute=attribute_name),
       answer=answer)
@@ -282,17 +285,16 @@ def is_factor(value, sample_args, context=None):
   (entity,) = context.sample(sample_args, [integer])
 
   templates = [
-      'Is {maybe_factor} a factor of {value}?',
-      'Is {value} a multiple of {maybe_factor}?',
-      'Does {maybe_factor} divide {value}?',
+      'È {maybe_factor} un divisore di {value}?',
+      'È {value} un multiplo di {maybe_factor}?',
   ]
   if maybe_factor == 2:
     templates += [
-        'Is {value} even?',
+        'È {value} pari?',
     ]
   template = random.choice(templates)
 
-  answer = integer % maybe_factor == 0
+  answer = 'Si' if integer % maybe_factor == 0 else 'No'
   return example.Problem(
       question=example.question(
           context, template, maybe_factor=maybe_factor,
@@ -314,8 +316,8 @@ def list_prime_factors(value, sample_args, context=None):
   (entity,) = context.sample(sample_args, [integer])
   prime_factors = sorted(sympy.factorint(integer).keys())
   template = random.choice([
-      'What are the prime factors of {integer}?',
-      'List the prime factors of {integer}.',
+      'Quali sono i fattori primi di {integer}?',
+      'Si elenchino i fattori primi di {integer}.',
   ])
   return example.Problem(
       question=example.question(
@@ -353,14 +355,14 @@ def lcm(value, sample_args, context=None):
   if random.choice([False, True]):
     p, q = context.sample(sample_args, [p, q])
     # Ask the question directly.
-    adjective = random.choice(['least', 'lowest', 'smallest'])
+    #adjective = random.choice(['minimo', 'lowest', 'smallest'])
     template = random.choice([
-        'Calculate the {adjective} common multiple of {p} and {q}.',
-        'What is the {adjective} common multiple of {p} and {q}?',
+        'Si calcoli il minimo comune multiplo di {p} e {q}.',
+        'Qual è il minimo comune multiplo di {p} e {q}?',
     ])
     return example.Problem(
         question=example.question(
-            context, template, adjective=adjective, p=p.expression_else_handle,
+            context, template, p=p.expression_else_handle,
             q=q.expression_else_handle),
         answer=answer)
   else:
@@ -370,9 +372,9 @@ def lcm(value, sample_args, context=None):
     p, q = context.sample(sample_args, [p, q])
 
     template = random.choice([
-        'What is the common denominator of {p} and {q}?',
-        'Find the common denominator of {p} and {q}.',
-        'Calculate the common denominator of {p} and {q}.',
+        'Qual è il comune denominatore di {p} e {q}?',
+        'Si trovi il comune denominatore di {p} e {q}.',
+        'Si calcoli il comune denominatore di {p} e {q}.',
     ])
     return example.Problem(
         question=example.question(
@@ -426,24 +428,23 @@ def gcd(value, sample_args, context=None):
 
   p, q = context.sample(sample_args, [p, q])
 
-  adjective = (random.choice(['greatest', 'highest']) + ' common '
-               + random.choice(['divisor', 'factor']))
+  #adjective = (random.choice(['greatest', 'highest']) + ' common '
+  #             + random.choice(['divisor', 'factor']))
 
   if is_question:
     template = random.choice([
-        'Calculate the {adjective} of {p} and {q}.',
-        'What is the {adjective} of {p} and {q}?',
+        'Si calcoli il massimo comune divisore di {p} e {q}.',
+        'Qual è il massimo comune divisore di {p} e {q}?',
     ])
     return example.Problem(
         question=example.question(
-            context, template, adjective=adjective, p=p, q=q),
+            context, template, p=p, q=q),
         answer=value)
   else:
     return composition.Entity(
         context=context,
         value=value,
-        description='Let {self} be the {adjective} of {p} and {q}.',
-        adjective=adjective, p=p, q=q)
+        description='Sia {self} il massimo comune divisore di {p} e {q}.', p=p, q=q)
 
 
 # @composition.module(number.is_positive_integer)
@@ -470,8 +471,8 @@ def div_remainder(value, sample_args, context=None):
 
   if is_question:
     template = random.choice([
-        'Calculate the remainder when {p} is divided by {q}.',
-        'What is the remainder when {p} is divided by {q}?',
+        'Si calcoli il resto di {p} diviso {q}.',
+        'Qual è il resto di {p} diviso {q}?',
     ])
     return example.Problem(
         question=example.question(
@@ -482,7 +483,7 @@ def div_remainder(value, sample_args, context=None):
     return composition.Entity(
         context=context,
         value=value,
-        description='Let {self} be the remainder when {p} is divided by {q}.',
+        description='Sia {self} il resto di {p} diviso {q}.',
         p=p, q=q)
 
 
@@ -503,9 +504,9 @@ def base_conversion(min_entropy, max_entropy):
 
   value = number.integer(entropy, signed=True)
   template = random.choice([
-      '{from_str} (base {from_base}) to base {to_base}',
-      'Convert {from_str} (base {from_base}) to base {to_base}.',
-      'What is {from_str} (base {from_base}) in base {to_base}?',
+      '{from_str}, se convertito da base {from_base} a base {to_base}, è uguale a',
+      'Si converta {from_str} da base {from_base} a base {to_base}.',
+      'Qual è {from_str} (in base {from_base}) convertito a base {to_base}?',
   ])
   return example.Problem(
       question=example.question(

@@ -48,7 +48,7 @@ _SWR_SAMPLE_COUNT = [2, 4]
 _SWR_SAMPLE_COUNT_EXTRAPOLATE = [5, 5]
 
 _GERUNDS = {
-    'pick': 'picking',
+    'i estrarre': 'estraendo',
 }
 
 
@@ -103,11 +103,11 @@ def _sequence_event(values, length, verb):
   events = [probability.DiscreteEvent([sample]) for sample in samples]
   event = probability.FiniteProductEvent(events)
   sequence = ''.join(str(sample) for sample in samples)
-  event_description = 'sequence {sequence}'.format(sequence=sequence)
+  event_description = 'ella sequenza {sequence}'.format(sequence=sequence)
   return event, event_description
 
 
-def _word_series(words, conjunction='and'):
+def _word_series(words, conjunction='e'):
   """Combines the words using commas and the final conjunction."""
   len_words = len(words)
   if len_words == 0:
@@ -136,9 +136,9 @@ def _level_set_event(values, length, verb):
   template = random.choice([
       '{verbing} {counts_and_values}',
   ])
-  verbing = _GERUNDS[verb]
+  #verbing = _GERUNDS[verb]
   event_description = template.format(
-      counts_and_values=counts_and_values, verbing=verbing)
+      counts_and_values=counts_and_values, verbing=verb)
   return event, event_description
 
 
@@ -173,13 +173,13 @@ def _sample_letter_bag(is_train, min_total):
   random_variable = probability.DiscreteRandomVariable(
       {i: letter for i, letter in enumerate(letters_with_repetition)})
 
-  if random.choice([False, True]):
-    bag_contents = ''.join(letters_with_repetition)
-  else:
-    letters_and_counts = [
-        '{}: {}'.format(letter, count)
-        for letter, count in zip(letters_distinct, letter_counts)]
-    bag_contents = '{' + ', '.join(letters_and_counts) + '}'
+  #if random.choice([False, True]):
+  bag_contents = ''.join(letters_with_repetition)
+  #else:
+  #  letters_and_counts = [
+  #      '{}: {}'.format(letter, count)
+  #      for letter, count in zip(letters_distinct, letter_counts)]
+  #  bag_contents = '{' + ', '.join(letters_and_counts) + '}'
 
   return LetterBag(
       weights=weights,
@@ -200,7 +200,7 @@ def _swr_space(is_train, sample_range):
 
   random_variable.description = (
       str(display.StringNumber(num_sampled))
-      + ' letters picked without replacement from '
+      + ' lettere sono estratte in successione senza reinserimento dalla sequenza '
       + sample.bag_contents)
 
   return sample.letters_distinct, space, random_variable
@@ -224,7 +224,7 @@ def _sample_without_replacement_probability_question(
         is_train, sample_range)
 
     event, event_description = event_fn(
-        values=distinct_letters, length=space.n_samples, verb='pick')
+        values=distinct_letters, length=space.n_samples, verb='i estrarre')
     event_in_space = random_variable.inverse(event)
     if too_big(event_in_space):
       continue
@@ -235,10 +235,10 @@ def _sample_without_replacement_probability_question(
   context = composition.Context()
 
   template = random.choice([
-      '{random_variable_capitalize}. What is prob of {event}?',
-      '{random_variable_capitalize}. Give prob of {event}.',
-      'What is prob of {event} when {random_variable}?',
-      'Calculate prob of {event} when {random_variable}.',
+      '{random_variable_capitalize}. Qual è la probabilità d{event}?',
+      '{random_variable_capitalize}. Si calcoli la probabilità d{event}.',
+      'Qual è la probabilità d{event} considerando che le {random_variable}?',
+      'Si calcoli la probabilità d{event} considerandoo che le {random_variable}.',
   ])
   question = example.question(
       context,

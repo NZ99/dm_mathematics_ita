@@ -231,7 +231,7 @@ def _polynomial_entity(value, context):
       value=value,
       expression=polynomial,
       polynomial_variables=variables,
-      description='Let {function} = {polynomial}.',
+      description='Sia {function} uguale a {polynomial}.',
       handle=handle,
       function=handle_description,
       polynomial=polynomial)
@@ -466,7 +466,7 @@ class Entity(object):
   new_entity = Entity(
       context=context,
       value=17,
-      description='Let {self} be the gcd of {q} and {q}.'
+      description='Sia {self} be the gcd of {q} and {q}.'
       p=p, q=q)
   ```
 
